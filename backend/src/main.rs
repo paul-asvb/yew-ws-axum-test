@@ -12,7 +12,7 @@ use axum::{
         TypedHeader,
     },
     http::StatusCode,
-    response::IntoResponse,
+    response::{Html, IntoResponse},
     routing::{get, get_service},
     Router,
 };
@@ -21,6 +21,10 @@ use tower_http::{
     services::ServeDir,
     trace::{DefaultMakeSpan, TraceLayer},
 };
+
+async fn handler() -> Html<&'static str> {
+    Html("<h1>Hello, World!</h1>")
+}
 
 #[tokio::main]
 async fn main() {
@@ -33,16 +37,15 @@ async fn main() {
     // build our application with some routes
     let app = Router::new()
         .fallback(
-            get_service(
-                ServeDir::new("../frontend/dist").append_index_html_on_directories(true),
-            )
-            .handle_error(|error: std::io::Error| async move {
-                (
-                    StatusCode::INTERNAL_SERVER_ERROR,
-                    format!("Unhandled internal error: {}", error),
-                )
-            }),
+            get_service(ServeDir::new("./frontend/dist").append_index_html_on_directories(true))
+                .handle_error(|error: std::io::Error| async move {
+                    (
+                        StatusCode::INTERNAL_SERVER_ERROR,
+                        format!("Unhandled internal error: {}", error),
+                    )
+                }),
         )
+        .route("/hello", get(handler))
         // routes are matched from bottom to top, so we have to put `nest` at the
         // top since it matches all routes
         .route("/ws", get(ws_handler))

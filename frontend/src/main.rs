@@ -2,10 +2,11 @@ use yew::prelude::*;
 
 enum Msg {
     AddOne,
+    GetStuff,
 }
 
 struct Model {
-    value: i64,
+    text: String,
 }
 
 impl Component for Model {
@@ -14,14 +15,20 @@ impl Component for Model {
 
     fn create(_ctx: &Context<Self>) -> Self {
         Self {
-            value: 0,
+            text: "nothing".to_string(),
         }
     }
 
     fn update(&mut self, _ctx: &Context<Self>, msg: Self::Message) -> bool {
         match msg {
             Msg::AddOne => {
-                self.value += 1;
+                self.text = "clicked".to_string();
+                // the value has changed so we need to
+                // re-render for it to appear on the page
+                true
+            }
+            Msg::GetStuff => {
+                self.text = "stuff".to_string();
                 // the value has changed so we need to
                 // re-render for it to appear on the page
                 true
@@ -34,8 +41,9 @@ impl Component for Model {
         let link = ctx.link();
         html! {
             <div>
-                <button onclick={link.callback(|_| Msg::AddOne)}>{ "+1" }</button>
-                <p>{ self.value }</p>
+                <button onclick={link.callback(|_| Msg::AddOne)}>{ "click" }</button>
+                <button onclick={link.callback(|_| Msg::GetStuff)}>{ "stuff" }</button>
+                <p>{ self.text.to_ascii_lowercase() }</p>
             </div>
         }
     }
