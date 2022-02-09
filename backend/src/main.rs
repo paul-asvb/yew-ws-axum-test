@@ -37,7 +37,7 @@ async fn main() {
     // build our application with some routes
     let app = Router::new()
         .fallback(
-            get_service(ServeDir::new("./frontend/dist").append_index_html_on_directories(true))
+            get_service(ServeDir::new("../frontend/dist").append_index_html_on_directories(true))
                 .handle_error(|error: std::io::Error| async move {
                     (
                         StatusCode::INTERNAL_SERVER_ERROR,
