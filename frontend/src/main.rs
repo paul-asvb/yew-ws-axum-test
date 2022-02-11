@@ -34,6 +34,8 @@ impl Component for Model {
         info!("ready_state: {:?}", ws_client.ready_state());
         let cloned_ws = ws_client.clone();
 
+        let bla = ctx.link().clone();
+
         let onmessage_callback = Closure::wrap(Box::new(move |e: MessageEvent| {
             if let Ok(abuf) = e.data().dyn_into::<js_sys::ArrayBuffer>() {
                 info!("message event, received arraybuffer: {:?}", abuf);
@@ -41,6 +43,7 @@ impl Component for Model {
                 let len = array.byte_length() as usize;
                 info!("Arraybuffer received {}bytes: {:?}", len, array.to_vec());
                 cloned_ws.set_binary_type(web_sys::BinaryType::Blob);
+              
                 match cloned_ws.send_with_u8_array(&vec![5, 6, 7, 8]) {
                     Ok(_) => info!("binary message successfully sent"),
                     Err(err) => info!("error sending message: {:?}", err),
@@ -60,7 +63,11 @@ impl Component for Model {
                 onloadend_cb.forget();
             } else if let Ok(txt) = e.data().dyn_into::<js_sys::JsString>() {
                 //ctx.link().send_message(Msg::GotMessage);
-                info!("message event, received Text: {:?}", txt);
+                let x: String = txt.into();
+
+                bla
+                .send_message(Msg::WsMessage(x));
+                //info!("message event, received Text: {:?}", move x);
             } else {
                 info!("message event, received Unknown: {:?}", e.data());
             }
