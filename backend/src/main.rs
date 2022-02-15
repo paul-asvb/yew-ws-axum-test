@@ -16,6 +16,8 @@ use axum::{
     routing::{get, get_service},
     Router,
 };
+use fake::{Faker, Fake};
+//use shared::Foo;
 use std::net::SocketAddr;
 use tower_http::{
     services::ServeDir,
@@ -104,13 +106,13 @@ async fn handle_socket(mut socket: WebSocket) {
 
     loop {
         if socket
-            .send(Message::Text(String::from("Hi!")))
+            .send(Message::Text(Faker.fake::<String>()))
             .await
             .is_err()
         {
             println!("client disconnected");
             return;
         }
-        tokio::time::sleep(std::time::Duration::from_secs(3)).await;
+        tokio::time::sleep(std::time::Duration::from_millis(300)).await;
     }
 }
