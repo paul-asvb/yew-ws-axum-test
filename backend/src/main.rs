@@ -16,7 +16,7 @@ use axum::{
     routing::{get, get_service},
     Router,
 };
-use fake::{Faker, Fake};
+use fake::{Fake, Faker};
 //use shared::Foo;
 use std::net::SocketAddr;
 use tower_http::{

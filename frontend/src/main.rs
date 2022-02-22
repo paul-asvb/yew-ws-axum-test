@@ -43,7 +43,7 @@ impl Component for Model {
                 let len = array.byte_length() as usize;
                 info!("Arraybuffer received {}bytes: {:?}", len, array.to_vec());
                 cloned_ws.set_binary_type(web_sys::BinaryType::Blob);
-              
+
                 match cloned_ws.send_with_u8_array(&vec![5, 6, 7, 8]) {
                     Ok(_) => info!("binary message successfully sent"),
                     Err(err) => info!("error sending message: {:?}", err),
@@ -65,8 +65,7 @@ impl Component for Model {
                 //ctx.link().send_message(Msg::GotMessage);
                 let x: String = txt.into();
 
-                bla
-                .send_message(Msg::WsMessage(x));
+                bla.send_message(Msg::WsMessage(x));
                 //info!("message event, received Text: {:?}", move x);
             } else {
                 info!("message event, received Unknown: {:?}", e.data());
