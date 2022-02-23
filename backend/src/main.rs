@@ -1,11 +1,3 @@
-//! Example websocket server.
-//!
-//! Run with
-//!
-//! ```not_rust
-//! cargo run -p example-websockets
-//! ```
-
 use axum::{
     extract::{
         ws::{Message, WebSocket, WebSocketUpgrade},
@@ -16,13 +8,20 @@ use axum::{
     routing::{get, get_service},
     Router,
 };
-use fake::{Fake, Faker};
+use fake::{Dummy, Fake, Faker};
+use serde::{self, Serialize};
 //use shared::Foo;
 use std::net::SocketAddr;
 use tower_http::{
     services::ServeDir,
     trace::{DefaultMakeSpan, TraceLayer},
 };
+
+#[derive(Eq, PartialEq, serde::Serialize, serde::Deserialize, Debug, Dummy)]
+struct MessageStuff {
+    some_message: String,
+    some_number: u16,
+}
 
 async fn handler() -> Html<&'static str> {
     Html("<h1>Hello, World!</h1>")
@@ -105,11 +104,9 @@ async fn handle_socket(mut socket: WebSocket) {
     }
 
     loop {
-        if socket
-            .send(Message::Text(Faker.fake::<String>()))
-            .await
-            .is_err()
-        {
+        let dummy: MessageStuff = Faker.fake();
+        let j = serde_json::to_string(&dummy).unwrap();
+        if socket.send(Message::Text(j)).await.is_err() {
             println!("client disconnected");
             return;
         }
